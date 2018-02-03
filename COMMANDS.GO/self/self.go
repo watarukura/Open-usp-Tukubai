@@ -8,10 +8,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
-	"syscall"
 	"unicode/utf8"
-
-	"golang.org/x/crypto/ssh/terminal"
 )
 
 func main() {
@@ -28,26 +25,7 @@ func main() {
 }
 
 func validateParam(param []string) ([]string, *bufio.Reader) {
-	var reader *bufio.Reader
-	if !terminal.IsTerminal(syscall.Stdin) {
-		reader = bufio.NewReader(os.Stdin)
-	} else {
-		fileName := param[len(param)-1]
-		// debug: fmt.Println(fileName)
-		file, err := os.OpenFile(fileName, os.O_RDONLY, 0600)
-		if err != nil {
-			fmt.Println("failed to read file")
-			fmt.Println(err)
-			os.Exit(1)
-		}
-
-		reader = bufio.NewReader(file)
-		// defer file.Close()
-
-		// パラメータの末尾を削除
-		param = param[:len(param)-1]
-	}
-	// debug: fmt.Println(param)
+	reader := bufio.NewReader(os.Stdin)
 
 	return param, reader
 }
@@ -66,7 +44,9 @@ func selectField(param []string, file *bufio.Reader) [][]string {
 
 	var result [][]string
 	var field string
+	var fields []string
 	var record []string
+	var toNum int
 	for _, line := range orgRecord {
 		for _, p := range param {
 			switch {
@@ -84,9 +64,20 @@ func selectField(param []string, file *bufio.Reader) [][]string {
 				field = string(r[startNum-1 : startNum-1+lenNum-1])
 				record = append(record, field)
 			case strings.Contains(p, "/"):
-				// fromTo := strings.Split(p, "/")
-				// from, to := fromTo[0], fromTo[1]
-
+				fromTo := strings.Split(p, "/")
+				from, to := fromTo[0], fromTo[1]
+				fromNum, _ := strconv.Atoi(from)
+				if to == "NF" {
+					toNum = len(line)
+				} else {
+					toNum, _ = strconv.Atoi(to)
+				}
+				fmt.Println(fromNum)
+				fmt.Println(toNum)
+				tmp := copy(fields, line[fromNum-1:toNum-1])
+				fmt.Println(fields)
+				fmt.Println(tmp)
+				// record = append(record, fields)
 			default:
 				num, _ := strconv.Atoi(p)
 				field = line[num-1]
