@@ -44,7 +44,6 @@ func selectField(param []string, file *bufio.Reader) [][]string {
 
 	var result [][]string
 	var field string
-	var fields []string
 	var record []string
 	var toNum int
 	for _, line := range orgRecord {
@@ -61,7 +60,7 @@ func selectField(param []string, file *bufio.Reader) [][]string {
 				lenNum, _ := strconv.Atoi(length)
 				str := line[num-1]
 				r := []rune(str)
-				field = string(r[startNum-1 : startNum-1+lenNum-1])
+				field = string(r[startNum-1 : startNum-1+lenNum])
 				record = append(record, field)
 			case strings.Contains(p, "/"):
 				fromTo := strings.Split(p, "/")
@@ -72,12 +71,9 @@ func selectField(param []string, file *bufio.Reader) [][]string {
 				} else {
 					toNum, _ = strconv.Atoi(to)
 				}
-				fmt.Println(fromNum)
-				fmt.Println(toNum)
-				tmp := copy(fields, line[fromNum-1:toNum-1])
-				fmt.Println(fields)
-				fmt.Println(tmp)
-				// record = append(record, fields)
+				fields := make([]string, len(line[fromNum-1:toNum]))
+				copy(fields, line[fromNum-1:toNum])
+				record = append(record, fields...)
 			default:
 				num, _ := strconv.Atoi(p)
 				field = line[num-1]
