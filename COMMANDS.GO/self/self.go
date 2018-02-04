@@ -25,6 +25,11 @@ func main() {
 }
 
 func validateParam(param []string) ([]string, *bufio.Reader) {
+	if len(param) == 0 {
+		fmt.Println("failed to read param")
+		os.Exit(1)
+	}
+
 	reader := bufio.NewReader(os.Stdin)
 
 	return param, reader
