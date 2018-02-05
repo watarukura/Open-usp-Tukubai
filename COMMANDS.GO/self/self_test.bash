@@ -23,10 +23,10 @@
 name=self # test対象コマンドの名前
 testpath=$(dirname $0) # 本スクリプト実行コマンドの先頭部($0)から本スクリプトのディレトリー名をとりだす
 cd $testpath # 本スクリプトのあるディレクトリーへ移動
-if test "$2" = ""; # <python-version>($2)がなければ
-	then pythonversion="python" # default versionのpythonとする
-	else pythonversion="$2" # <python-version>($2)があれば指定versionのpythonとする
-fi
+# if test "$2" = ""; # <python-version>($2)がなければ
+# 	then pythonversion="python" # default versionのpythonとする
+# 	else pythonversion="$2" # <python-version>($2)があれば指定versionのpythonとする
+# fi
 if test "$1" = ""; # <command-path>($1)がなければ
 	then commandpath="." # test対象コマンドは現ディレクトリーにある
 	else commandpath="$1" # <command-path>($1)があればtest対象コマンドは指定のディレクトリーにある
