@@ -30,6 +30,48 @@ func validateParam(param []string) ([]string, *bufio.Reader) {
 		os.Exit(1)
 	}
 
+	for _, p := range param {
+		switch {
+		case strings.Contains(p, "."):
+			sp := strings.Split(p, ".")
+			if len(sp) != 3 {
+				fmt.Println("invalid param: " + p)
+				os.Exit(1)
+			}
+			for _, spp := range sp {
+				_, err := strconv.Atoi(spp)
+				if err != nil {
+					fmt.Println("invalid param: " + p)
+					os.Exit(1)
+				}
+			}
+		case strings.Contains(p, "/"):
+			sp := strings.Split(p, "/")
+			if len(sp) != 2 {
+				fmt.Println("invalid param" + p)
+				os.Exit(1)
+			}
+			_, err := strconv.Atoi(sp[0])
+			if err != nil {
+				fmt.Println("invalid param: " + p)
+				os.Exit(1)
+			}
+			if sp[1] != "NF" {
+				if err != nil {
+					fmt.Println("invalid param: " + p)
+					os.Exit(1)
+				}
+			}
+		case p == "NF":
+		default:
+			_, err := strconv.Atoi(p)
+			if err != nil {
+				fmt.Println("invalid param: " + p)
+				os.Exit(1)
+			}
+		}
+	}
+
 	reader := bufio.NewReader(os.Stdin)
 
 	return param, reader
