@@ -40,8 +40,16 @@ func validateParam(param []string) ([]string, *bufio.Reader) {
 					os.Exit(1)
 				}
 			}
-			for _, spp := range sp {
-				if spp != "NF" {
+			for i, spp := range sp {
+				if i == 0 {
+					if spp != "NF" {
+						_, err := strconv.Atoi(spp)
+						if err != nil {
+							fmt.Println("invalid param: " + p)
+							os.Exit(1)
+						}
+					}
+				} else {
 					_, err := strconv.Atoi(spp)
 					if err != nil {
 						fmt.Println("invalid param: " + p)
