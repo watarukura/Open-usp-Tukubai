@@ -41,30 +41,76 @@ func validateParam(param []string) ([]string, *bufio.Reader) {
 				}
 			}
 			for _, spp := range sp {
-				_, err := strconv.Atoi(spp)
-				if err != nil {
-					fmt.Println("invalid param: " + p)
-					os.Exit(1)
+				if spp != "NF" {
+					_, err := strconv.Atoi(spp)
+					if err != nil {
+						fmt.Println("invalid param: " + p)
+						os.Exit(1)
+					}
 				}
 			}
 		case strings.Contains(p, "/"):
 			sp := strings.Split(p, "/")
+			from, to := sp[0], sp[1]
 			if len(sp) != 2 {
 				fmt.Println("invalid param" + p)
 				os.Exit(1)
 			}
-			_, err := strconv.Atoi(sp[0])
-			if err != nil {
-				fmt.Println("invalid param: " + p)
-				os.Exit(1)
+			if strings.HasPrefix(from, "NF") {
+				if len(from) > 2 {
+					sign := from[2:3]
+					if sign != "-" {
+						fmt.Println("invalid param: " + p)
+						os.Exit(1)
+					}
+					_, err := strconv.Atoi(from[3:])
+					if err != nil {
+						fmt.Println("invalid param: " + p)
+						os.Exit(1)
+					}
+				}
+			} else {
+				_, err := strconv.Atoi(from)
+				if err != nil {
+					fmt.Println("invalid param: " + p)
+					os.Exit(1)
+				}
+
 			}
-			if sp[1] != "NF" {
+
+			if strings.HasPrefix(to, "NF") {
+				if len(to) > 2 {
+					sign := to[2:3]
+					if sign != "-" {
+						fmt.Println("invalid param: " + p)
+						os.Exit(1)
+					}
+					_, err := strconv.Atoi(to[3:])
+					if err != nil {
+						fmt.Println("invalid param: " + p)
+						os.Exit(1)
+					}
+				}
+			} else {
+				_, err := strconv.Atoi(to)
 				if err != nil {
 					fmt.Println("invalid param: " + p)
 					os.Exit(1)
 				}
 			}
-		case p == "NF":
+		case strings.HasPrefix(p, "NF"):
+			if len(p) > 2 {
+				sign := p[2:3]
+				if sign != "-" {
+					fmt.Println("invalid param: " + p)
+					os.Exit(1)
+				}
+				_, err := strconv.Atoi(p[3:])
+				if err != nil {
+					fmt.Println("invalid param: " + p)
+					os.Exit(1)
+				}
+			}
 		default:
 			_, err := strconv.Atoi(p)
 			if err != nil {
@@ -95,7 +141,6 @@ func selectField(param []string, file *bufio.Reader) [][]string {
 	var result [][]string
 	var field string
 	var record []string
-	var toNum int
 	for _, line := range orgRecord {
 		for _, p := range param {
 			switch {
@@ -117,7 +162,11 @@ func selectField(param []string, file *bufio.Reader) [][]string {
 				var str string
 				if len(nfStartLength) == 2 {
 					nf, length = nfStartLength[0], nfStartLength[1]
-					num, _ = strconv.Atoi(nf)
+					if nf == "NF" {
+						num = len(line)
+					} else {
+						num, _ = strconv.Atoi(nf)
+					}
 					lenNum, _ = strconv.Atoi(length)
 					str := line[num-1]
 					startNum = utf8.RuneCountInString(str) - lenNum
@@ -126,27 +175,57 @@ func selectField(param []string, file *bufio.Reader) [][]string {
 					record = append(record, field)
 				} else {
 					nf, start, length = nfStartLength[0], nfStartLength[1], nfStartLength[2]
-					num, _ = strconv.Atoi(nf)
+					if nf == "NF" {
+						num = len(line)
+					} else {
+						num, _ = strconv.Atoi(nf)
+					}
 					startNum, _ = strconv.Atoi(start)
 					lenNum, _ = strconv.Atoi(length)
 					str = line[num-1]
 					r := []rune(str)
 					field = string(r[startNum-1 : startNum-1+lenNum])
-					fmt.Println(field)
 					record = append(record, field)
 				}
 			case strings.Contains(p, "/"):
 				fromTo := strings.Split(p, "/")
 				from, to := fromTo[0], fromTo[1]
-				fromNum, _ := strconv.Atoi(from)
-				if to == "NF" {
-					toNum = len(line)
+				var fromNum int
+				var toNum int
+				if strings.HasPrefix(from, "NF") {
+					if len(from) > 2 {
+						nfMinus, _ := strconv.Atoi(from[3:])
+						fromNum = len(line) - nfMinus
+					} else {
+						fromNum = len(line)
+					}
+				} else {
+					fromNum, _ = strconv.Atoi(from)
+				}
+
+				if strings.HasPrefix(to, "NF") {
+					if len(to) > 2 {
+						nfMinus, _ := strconv.Atoi(to[3:])
+						toNum = len(line) - nfMinus
+					} else {
+						toNum = len(line)
+					}
 				} else {
 					toNum, _ = strconv.Atoi(to)
 				}
 				fields := make([]string, len(line[fromNum-1:toNum]))
 				copy(fields, line[fromNum-1:toNum])
 				record = append(record, fields...)
+			case strings.HasPrefix(p, "NF"):
+				var num int
+				if len(p) > 2 {
+					nfMinus, _ := strconv.Atoi(p[3:])
+					num = len(line) - 1 - nfMinus
+					field = line[num]
+				} else {
+					field = line[len(line)-1]
+				}
+				record = append(record, field)
 			default:
 				num, _ := strconv.Atoi(p)
 				field = line[num-1]

@@ -224,9 +224,9 @@ diff $tmp-ans $tmp-out
 ###########################################
 #TEST11
 
-echo ＵＳＰ研究所 | ${com} 1.2.4 > $tmp-ans 2> /dev/null
-# Error[self] : 部分文字列の開始位置が全角文字の内部になります。
-[ $? -eq 1 ] ; ERROR_CHECK "TEST11 error"
+# echo ＵＳＰ研究所 | ${com} 1.2.4 > $tmp-ans 2> /dev/null
+# # Error[self] : 部分文字列の開始位置が全角文字の内部になります。
+# [ $? -eq 1 ] ; ERROR_CHECK "TEST11 error"
 
 ###########################################
 #TEST12
@@ -238,9 +238,9 @@ echo ＵＳＰ研究所 | ${com} 1.20 > $tmp-ans 2> /dev/null
 ###########################################
 #TEST13
 
-echo ＵＳＰ研究所 | ${com} 1.2 > $tmp-ans 2> /dev/null
-# Error[self] : 部分文字列の開始位置が全角文字の内部になります。
-[ $? -eq 1 ] ; ERROR_CHECK "TEST13 error"
+# echo ＵＳＰ研究所 | ${com} 1.2 > $tmp-ans 2> /dev/null
+# # Error[self] : 部分文字列の開始位置が全角文字の内部になります。
+# [ $? -eq 1 ] ; ERROR_CHECK "TEST13 error"
 
 ###########################################
 #TEST14
@@ -357,9 +357,9 @@ cat << FIN > $tmp-out
 け゚こ゚ F
 FIN
 
-cat $tmp-in | ${com} 2.7.4 4 > $tmp-ans
-diff $tmp-ans $tmp-out
-[ $? -eq 0 ] ; ERROR_CHECK "追加TEST1 error"
+# cat $tmp-in | ${com} 2.7.4 4 > $tmp-ans
+# diff $tmp-ans $tmp-out
+# [ $? -eq 0 ] ; ERROR_CHECK "追加TEST1 error"
 
 ###########################################
 #追加TEST2
@@ -367,10 +367,10 @@ diff $tmp-ans $tmp-out
 
 # ${com} -d 1.3.4 2.1.5 "神︀邊󠄊𠀋一 か゚12345" > $tmp-ans
 
-# 「神︀」はSVSの例で神︀(U+795E_U+FE00)
-# 「邊󠄊」はIVSの例で邊󠄊(U+908A_U+E010A)代用対では邊󠄊(U+908A_U+DB40-U+DD0A)
-# 「𠀋」は𠀋(U+2000B)代用対では𠀋(U+D840-U+DC0B)
-# 「か゚」は結合文字列の例でか゚(U+304B_U+309A)
+# # 「神︀」はSVSの例で神︀(U+795E_U+FE00)
+# # 「邊󠄊」はIVSの例で邊󠄊(U+908A_U+E010A)代用対では邊󠄊(U+908A_U+DB40-U+DD0A)
+# # 「𠀋」は𠀋(U+2000B)代用対では𠀋(U+D840-U+DC0B)
+# # 「か゚」は結合文字列の例でか゚(U+304B_U+309A)
 
 # cat << FIN > $tmp-out
 # 邊󠄊𠀋 か゚123
@@ -379,6 +379,6 @@ diff $tmp-ans $tmp-out
 # diff $tmp-ans $tmp-out
 # [ $? -eq 0 ] ; ERROR_CHECK "追加TEST2 error"
 
-# rm -f $tmp-*
-# echo "${pythonversion} ${name}" OK
+rm -f $tmp-*
+echo "${pythonversion} ${name}" OK
 exit 0
