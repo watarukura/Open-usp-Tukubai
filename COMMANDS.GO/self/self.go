@@ -35,8 +35,10 @@ func validateParam(param []string) ([]string, *bufio.Reader) {
 		case strings.Contains(p, "."):
 			sp := strings.Split(p, ".")
 			if len(sp) != 3 {
-				fmt.Println("invalid param: " + p)
-				os.Exit(1)
+				if len(sp) != 2 {
+					fmt.Println("invalid param: " + p)
+					os.Exit(1)
+				}
 			}
 			for _, spp := range sp {
 				_, err := strconv.Atoi(spp)
@@ -81,6 +83,7 @@ func selectField(param []string, file *bufio.Reader) [][]string {
 	csvr := csv.NewReader(file)
 	delm, _ := utf8.DecodeLastRuneInString(" ")
 	csvr.Comma = delm
+	csvr.TrimLeadingSpace = true
 
 	orgRecord, err := csvr.ReadAll()
 	if err != nil {
@@ -99,16 +102,39 @@ func selectField(param []string, file *bufio.Reader) [][]string {
 			case p == "NF":
 				field = line[len(line)-1]
 				record = append(record, field)
+			case p == "0":
+				fields := make([]string, len(line))
+				copy(fields, line)
+				record = append(record, fields...)
 			case strings.Contains(p, "."):
 				nfStartLength := strings.Split(p, ".")
-				nf, start, length := nfStartLength[0], nfStartLength[1], nfStartLength[2]
-				num, _ := strconv.Atoi(nf)
-				startNum, _ := strconv.Atoi(start)
-				lenNum, _ := strconv.Atoi(length)
-				str := line[num-1]
-				r := []rune(str)
-				field = string(r[startNum-1 : startNum-1+lenNum])
-				record = append(record, field)
+				var nf string
+				var start string
+				var length string
+				var num int
+				var startNum int
+				var lenNum int
+				var str string
+				if len(nfStartLength) == 2 {
+					nf, length = nfStartLength[0], nfStartLength[1]
+					num, _ = strconv.Atoi(nf)
+					lenNum, _ = strconv.Atoi(length)
+					str := line[num-1]
+					startNum = utf8.RuneCountInString(str) - lenNum
+					r := []rune(str)
+					field = string(r[startNum:])
+					record = append(record, field)
+				} else {
+					nf, start, length = nfStartLength[0], nfStartLength[1], nfStartLength[2]
+					num, _ = strconv.Atoi(nf)
+					startNum, _ = strconv.Atoi(start)
+					lenNum, _ = strconv.Atoi(length)
+					str = line[num-1]
+					r := []rune(str)
+					field = string(r[startNum-1 : startNum-1+lenNum])
+					fmt.Println(field)
+					record = append(record, field)
+				}
 			case strings.Contains(p, "/"):
 				fromTo := strings.Split(p, "/")
 				from, to := fromTo[0], fromTo[1]
