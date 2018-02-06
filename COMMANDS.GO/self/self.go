@@ -37,11 +37,12 @@ func validateParam(param []string) ([]string, *bufio.Reader) {
 
 	for _, p := range param {
 		switch {
+		// 部分文字列取得
 		case strings.Contains(p, "."):
 			sp := strings.Split(p, ".")
 			if len(sp) != 3 {
 				if len(sp) != 2 {
-					fatal(errors.New("invalid param" + p))
+					fatal(errors.New("invalid param: " + p))
 				}
 			}
 			for i, spp := range sp {
@@ -59,17 +60,18 @@ func validateParam(param []string) ([]string, *bufio.Reader) {
 					}
 				}
 			}
+		// 部分配列取得
 		case strings.Contains(p, "/"):
 			sp := strings.Split(p, "/")
 			from, to := sp[0], sp[1]
 			if len(sp) != 2 {
-				fatal(errors.New("invalid param" + p))
+				fatal(errors.New("invalid param: " + p))
 			}
 			if strings.HasPrefix(from, "NF") {
 				if len(from) > 2 {
 					sign := from[2:3]
 					if sign != "-" {
-						fatal(errors.New("invalid param" + p))
+						fatal(errors.New("invalid param: " + p))
 					}
 					_, err := strconv.Atoi(from[3:])
 					if err != nil {
@@ -88,7 +90,7 @@ func validateParam(param []string) ([]string, *bufio.Reader) {
 				if len(to) > 2 {
 					sign := to[2:3]
 					if sign != "-" {
-						fatal(errors.New("invalid param" + p))
+						fatal(errors.New("invalid param: " + p))
 					}
 					_, err := strconv.Atoi(to[3:])
 					if err != nil {
@@ -101,17 +103,19 @@ func validateParam(param []string) ([]string, *bufio.Reader) {
 					fatal(err)
 				}
 			}
+		// 配列末尾からのカウントで取得
 		case strings.HasPrefix(p, "NF"):
 			if len(p) > 2 {
 				sign := p[2:3]
 				if sign != "-" {
-					fatal(errors.New("invalid param" + p))
+					fatal(errors.New("invalid param: " + p))
 				}
 				_, err := strconv.Atoi(p[3:])
 				if err != nil {
 					fatal(err)
 				}
 			}
+		// 配列のindex指定で取得
 		default:
 			_, err := strconv.Atoi(p)
 			if err != nil {
@@ -120,6 +124,8 @@ func validateParam(param []string) ([]string, *bufio.Reader) {
 		}
 	}
 
+	// 一旦パイプ経由での標準入力のみ受付
+	// TODO: 標準入力なしで引数の末尾がファイル名の場合はファイル読み込み
 	reader := bufio.NewReader(os.Stdin)
 
 	return param, reader
