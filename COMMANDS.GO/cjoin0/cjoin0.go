@@ -106,7 +106,7 @@ func cjoin0(fromNum int, toNum int, master string, tran string) ([][]string, [][
 	if err != nil {
 		fatal(err)
 	}
-	masterToken := setMasterToken(masterRecord, toNum-fromNum)
+	masterKey := setMasterKey(masterRecord, toNum-fromNum)
 
 	tranRecord, err := csvt.ReadAll()
 	if err != nil {
@@ -116,8 +116,8 @@ func cjoin0(fromNum int, toNum int, master string, tran string) ([][]string, [][
 	var result [][]string
 	var ngResult [][]string
 	for _, line := range tranRecord {
-		key := line[fromNum-1 : toNum-1]
-		if containsSlice(masterToken, key) {
+		tranKey := strings.Join(line[fromNum-1:toNum-1], " ")
+		if _, ok := masterKey[tranKey]; ok {
 			result = append(result, line)
 		} else {
 			if ngBool {
@@ -130,45 +130,13 @@ func cjoin0(fromNum int, toNum int, master string, tran string) ([][]string, [][
 	return result, ngResult
 }
 
-func setMasterToken(masterRecord [][]string, keyNum int) [][]string {
-	masterToken := make([][]string, len(masterRecord))
+func setMasterKey(masterRecord [][]string, keyNum int) map[string][]string {
+	masterKey := make(map[string][]string, len(masterRecord))
 	for _, line := range masterRecord {
-		masterToken = append(masterToken, line[0:keyNum])
+		token := strings.Join(line[0:keyNum], " ")
+		masterKey[token] = line
 	}
-	return masterToken
-}
-
-// https://stackoverflow.com/questions/15311969/checking-the-equality-of-two-slices
-func sliceEq(a, b []string) bool {
-	if a == nil && b == nil {
-		return true
-	}
-
-	if a == nil || b == nil {
-		return false
-	}
-
-	if len(a) != len(b) {
-		return false
-	}
-
-	for i := range a {
-		if a[i] != b[i] {
-			return false
-		}
-	}
-
-	return true
-}
-
-// http://gawawa124.hatenablog.com/entry/2015/04/08/193237
-func containsSlice(s [][]string, e []string) bool {
-	for _, v := range s {
-		if sliceEq(e, v) {
-			return true
-		}
-	}
-	return false
+	return masterKey
 }
 
 func writeFields(fields [][]string) {
