@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"encoding/csv"
+	"errors"
 	"flag"
 	"fmt"
 	"os"
@@ -24,10 +25,14 @@ func main() {
 	writeFields(fields)
 }
 
+func fatal(err error) {
+	fmt.Fprintf(os.Stderr, "%s: %s", os.Args[0], err)
+	os.Exit(1)
+}
+
 func validateParam(param []string) ([]string, *bufio.Reader) {
 	if len(param) == 0 {
-		fmt.Println("failed to read param")
-		os.Exit(1)
+		fatal(errors.New("failed to read param"))
 	}
 
 	for _, p := range param {
@@ -36,8 +41,7 @@ func validateParam(param []string) ([]string, *bufio.Reader) {
 			sp := strings.Split(p, ".")
 			if len(sp) != 3 {
 				if len(sp) != 2 {
-					fmt.Println("invalid param: " + p)
-					os.Exit(1)
+					fatal(errors.New("invalid param" + p))
 				}
 			}
 			for i, spp := range sp {
@@ -45,15 +49,13 @@ func validateParam(param []string) ([]string, *bufio.Reader) {
 					if spp != "NF" {
 						_, err := strconv.Atoi(spp)
 						if err != nil {
-							fmt.Println("invalid param: " + p)
-							os.Exit(1)
+							fatal(err)
 						}
 					}
 				} else {
 					_, err := strconv.Atoi(spp)
 					if err != nil {
-						fmt.Println("invalid param: " + p)
-						os.Exit(1)
+						fatal(err)
 					}
 				}
 			}
@@ -61,27 +63,23 @@ func validateParam(param []string) ([]string, *bufio.Reader) {
 			sp := strings.Split(p, "/")
 			from, to := sp[0], sp[1]
 			if len(sp) != 2 {
-				fmt.Println("invalid param" + p)
-				os.Exit(1)
+				fatal(errors.New("invalid param" + p))
 			}
 			if strings.HasPrefix(from, "NF") {
 				if len(from) > 2 {
 					sign := from[2:3]
 					if sign != "-" {
-						fmt.Println("invalid param: " + p)
-						os.Exit(1)
+						fatal(errors.New("invalid param" + p))
 					}
 					_, err := strconv.Atoi(from[3:])
 					if err != nil {
-						fmt.Println("invalid param: " + p)
-						os.Exit(1)
+						fatal(err)
 					}
 				}
 			} else {
 				_, err := strconv.Atoi(from)
 				if err != nil {
-					fmt.Println("invalid param: " + p)
-					os.Exit(1)
+					fatal(err)
 				}
 
 			}
@@ -90,40 +88,34 @@ func validateParam(param []string) ([]string, *bufio.Reader) {
 				if len(to) > 2 {
 					sign := to[2:3]
 					if sign != "-" {
-						fmt.Println("invalid param: " + p)
-						os.Exit(1)
+						fatal(errors.New("invalid param" + p))
 					}
 					_, err := strconv.Atoi(to[3:])
 					if err != nil {
-						fmt.Println("invalid param: " + p)
-						os.Exit(1)
+						fatal(err)
 					}
 				}
 			} else {
 				_, err := strconv.Atoi(to)
 				if err != nil {
-					fmt.Println("invalid param: " + p)
-					os.Exit(1)
+					fatal(err)
 				}
 			}
 		case strings.HasPrefix(p, "NF"):
 			if len(p) > 2 {
 				sign := p[2:3]
 				if sign != "-" {
-					fmt.Println("invalid param: " + p)
-					os.Exit(1)
+					fatal(errors.New("invalid param" + p))
 				}
 				_, err := strconv.Atoi(p[3:])
 				if err != nil {
-					fmt.Println("invalid param: " + p)
-					os.Exit(1)
+					fatal(err)
 				}
 			}
 		default:
 			_, err := strconv.Atoi(p)
 			if err != nil {
-				fmt.Println("invalid param: " + p)
-				os.Exit(1)
+				fatal(err)
 			}
 		}
 	}
@@ -141,9 +133,7 @@ func selectField(param []string, file *bufio.Reader) [][]string {
 
 	orgRecord, err := csvr.ReadAll()
 	if err != nil {
-		fmt.Println("failed to read file as csv")
-		fmt.Println(err)
-		os.Exit(1)
+		fatal(err)
 	}
 
 	var result [][]string
