@@ -107,7 +107,7 @@ diff $tmp-ans2 $tmp-ng
 
 cat << FIN > $tmp-tran
 CCC 003 太田
-AAA 001 山田 
+AAA 001 山田
 BBB 002 上田
 DDD 004 堅田
 FIN

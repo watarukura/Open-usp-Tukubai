@@ -23,6 +23,8 @@ func main() {
 	// debug: fmt.Println(param)
 
 	fromNum, toNum, master, tran := validateParam(param)
+	// fmt.Println(fromNum)
+	// fmt.Println(toNum)
 
 	fields, ngFields := cjoin1(fromNum, toNum, master, tran)
 	// debug: fmt.Println(fields)
@@ -71,6 +73,7 @@ func validateParam(param []string) (int, int, string, string) {
 		if err != nil {
 			fatal(err)
 		}
+		fromNum = fromNum - 1
 		toNum, err = strconv.Atoi(to)
 		if err != nil {
 			fatal(err)
@@ -80,6 +83,7 @@ func validateParam(param []string) (int, int, string, string) {
 		if err != nil {
 			fatal(err)
 		}
+		fromNum = fromNum - 1
 		toNum = fromNum + 1
 	}
 	return fromNum, toNum, master, tran
@@ -116,19 +120,17 @@ func cjoin1(fromNum int, toNum int, master string, tran string) ([][]string, [][
 	var result [][]string
 	var ngResult [][]string
 	for _, line := range tranRecord {
-		tranKey := strings.Join(line[fromNum-1:toNum-1], " ")
-		// fmt.Println(tranKey)
+		tranKey := strings.Join(line[fromNum:toNum], " ")
 		if val, ok := masterKey[tranKey]; ok {
 			// fmt.Println(val)
-			prev := line[0 : toNum-1]
+			prev := make([]string, len(line[0:toNum]))
+			end := make([]string, len(line[toNum:]))
+			copy(prev, line[0:toNum])
 			// fmt.Println(prev)
-			end := line[toNum-1:]
-			fmt.Println(end)
-			concatLine1 := append(prev, val...)
-			fmt.Println(concatLine1)
-			fmt.Println(end)
-			concatLine := append(concatLine1, end...)
-			fmt.Println(concatLine)
+			copy(end, line[toNum:])
+			// fmt.Println(end)
+			concatLine := append(prev, val...)
+			concatLine = append(concatLine, end...)
 			result = append(result, concatLine)
 		} else {
 			if ngBool {
@@ -142,6 +144,7 @@ func cjoin1(fromNum int, toNum int, master string, tran string) ([][]string, [][
 }
 
 func setMasterKey(masterRecord [][]string, keyNum int) map[string][]string {
+	// fmt.Println(keyNum)
 	masterKey := make(map[string][]string, len(masterRecord))
 	for _, line := range masterRecord {
 		token := strings.Join(line[0:keyNum], " ")

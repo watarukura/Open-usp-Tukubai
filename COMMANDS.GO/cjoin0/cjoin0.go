@@ -23,6 +23,8 @@ func main() {
 	// debug: fmt.Println(param)
 
 	fromNum, toNum, master, tran := validateParam(param)
+	// fmt.Println(fromNum)
+	// fmt.Println(toNum)
 
 	fields, ngFields := cjoin0(fromNum, toNum, master, tran)
 	// debug: fmt.Println(fields)
@@ -71,6 +73,7 @@ func validateParam(param []string) (int, int, string, string) {
 		if err != nil {
 			fatal(err)
 		}
+		fromNum = fromNum - 1
 		toNum, err = strconv.Atoi(to)
 		if err != nil {
 			fatal(err)
@@ -80,6 +83,7 @@ func validateParam(param []string) (int, int, string, string) {
 		if err != nil {
 			fatal(err)
 		}
+		fromNum = fromNum - 1
 		toNum = fromNum + 1
 	}
 	return fromNum, toNum, master, tran
@@ -116,7 +120,7 @@ func cjoin0(fromNum int, toNum int, master string, tran string) ([][]string, [][
 	var result [][]string
 	var ngResult [][]string
 	for _, line := range tranRecord {
-		tranKey := strings.Join(line[fromNum-1:toNum-1], " ")
+		tranKey := strings.Join(line[fromNum:toNum], " ")
 		if _, ok := masterKey[tranKey]; ok {
 			result = append(result, line)
 		} else {
@@ -130,11 +134,11 @@ func cjoin0(fromNum int, toNum int, master string, tran string) ([][]string, [][
 	return result, ngResult
 }
 
-func setMasterKey(masterRecord [][]string, keyNum int) map[string][]string {
-	masterKey := make(map[string][]string, len(masterRecord))
+func setMasterKey(masterRecord [][]string, keyNum int) map[string]bool {
+	masterKey := make(map[string]bool, len(masterRecord))
 	for _, line := range masterRecord {
 		token := strings.Join(line[0:keyNum], " ")
-		masterKey[token] = line
+		masterKey[token] = true
 	}
 	return masterKey
 }
