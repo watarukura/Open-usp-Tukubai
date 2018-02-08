@@ -174,13 +174,13 @@ ${com} +@@ key=2/3 $tmp-master $tmp-tran > $tmp-ans
 diff $tmp-ans $tmp-out
 [ $? -eq 0 ] ; ERROR_CHECK "TEST5.1 error"
 
-${com} -d@@ key=2/3 $tmp-master $tmp-tran > $tmp-ans
-diff $tmp-ans $tmp-out
-[ $? -eq 0 ] ; ERROR_CHECK "TEST5.2 error"
+# ${com} -d@@ key=2/3 $tmp-master $tmp-tran > $tmp-ans
+# diff $tmp-ans $tmp-out
+# [ $? -eq 0 ] ; ERROR_CHECK "TEST5.2 error"
 
-cat $tmp-tran | ${com} -d@@ key=2/3 $tmp-master > $tmp-ans
-diff $tmp-ans $tmp-out
-[ $? -eq 0 ] ; ERROR_CHECK "TEST5.3 error"
+# cat $tmp-tran | ${com} -d@@ key=2/3 $tmp-master > $tmp-ans
+# diff $tmp-ans $tmp-out
+# [ $? -eq 0 ] ; ERROR_CHECK "TEST5.3 error"
 
 ###########################################
 #追加TEST1
@@ -209,13 +209,13 @@ ${com} +𠆢 key=2/3 $tmp-master $tmp-tran > $tmp-ans
 diff $tmp-ans $tmp-out
 [ $? -eq 0 ] ; ERROR_CHECK "追加TEST1.1 error"
 
-${com} -d𠆢 key=2/3 $tmp-master $tmp-tran > $tmp-ans
-diff $tmp-ans $tmp-out
-[ $? -eq 0 ] ; ERROR_CHECK "追加TEST1.2 error"
+# ${com} -d𠆢 key=2/3 $tmp-master $tmp-tran > $tmp-ans
+# diff $tmp-ans $tmp-out
+# [ $? -eq 0 ] ; ERROR_CHECK "追加TEST1.2 error"
 
-cat $tmp-tran | ${com} -d𠆢 key=2/3 $tmp-master > $tmp-ans
-diff $tmp-ans $tmp-out
-[ $? -eq 0 ] ; ERROR_CHECK "追加TEST1.3 error"
+# cat $tmp-tran | ${com} -d𠆢 key=2/3 $tmp-master > $tmp-ans
+# diff $tmp-ans $tmp-out
+# [ $? -eq 0 ] ; ERROR_CHECK "追加TEST1.3 error"
 
 # 「𠆢」は𠆢(U+201A2)代用対では𠆢(U+D840-U+DDA2)
 

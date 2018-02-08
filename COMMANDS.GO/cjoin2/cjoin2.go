@@ -33,7 +33,7 @@ func main() {
 }
 
 func fatal(err error) {
-	fmt.Fprintf(os.Stderr, "%s: %s", os.Args[0], err)
+	fmt.Fprintf(os.Stderr, "%s: %s\n", os.Args[0], err)
 	os.Exit(1)
 }
 
@@ -47,7 +47,7 @@ func validateParam(param []string) (int, int, string, string) {
 	)
 	if len(param) == 4 {
 		dummy, orgKey, master, tran = param[0], param[1], param[2], param[3]
-		if strings.HasPrefix(dummy, "+") {
+		if !strings.HasPrefix(dummy, "+") {
 			fatal(errors.New("failed to read param: +ng"))
 		}
 		dummyStr = dummy[1:]
